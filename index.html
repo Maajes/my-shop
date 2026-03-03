@@ -1,0 +1,2285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小彳金金·物舍</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg-gradient: linear-gradient(145deg, #faf7f2 0%, #f2ede5 100%);
+            --card-bg: rgba(255, 250, 240, 0.7);
+            --text-primary: #2e2a24;
+            --text-secondary: #5f5243;
+            --border-light: rgba(210, 190, 170, 0.3);
+            --shadow-color: rgba(120, 90, 70, 0.15);
+            --accent-wood: #6b5a4a;
+            --accent-free: #3f6a4f;
+            --accent-paid: #b5673a;
+        }
+
+        body.dark-mode {
+            --bg-gradient: linear-gradient(145deg, #2a2a24 0%, #1f1f1a 100%);
+            --card-bg: rgba(40, 35, 30, 0.85);
+            --text-primary: #e0d8d0;
+            --text-secondary: #c0b0a0;
+            --border-light: rgba(100, 80, 60, 0.5);
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --accent-wood: #b8a28c;
+            --accent-free: #8bb89b;
+            --accent-paid: #e0a070;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+            padding: 1.5rem 1rem 3rem;
+            line-height: 1.6;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .theme-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-light);
+            border-radius: 60px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+
+        .theme-switch:hover {
+            transform: translateY(-2px);
+        }
+
+        .visitor-panel {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 100px;
+            padding: 0.7rem 1.8rem 0.7rem 2rem;
+            margin-bottom: 2.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid var(--border-light);
+            box-shadow: 0 8px 20px -8px var(--shadow-color);
+        }
+
+        .greeting {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+        }
+
+        .greeting span {
+            background: rgba(200, 175, 150, 0.2);
+            backdrop-filter: blur(4px);
+            border-radius: 40px;
+            padding: 0.4rem 1.5rem;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            border: 1px solid var(--border-light);
+        }
+
+        .badge-info {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.95rem;
+            flex-wrap: wrap;
+        }
+
+        .badge-info i {
+            font-style: normal;
+            background: rgba(180, 160, 140, 0.2);
+            backdrop-filter: blur(4px);
+            border-radius: 30px;
+            padding: 0.3rem 1.2rem;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-light);
+        }
+
+        .edit-info-btn {
+            background: rgba(170, 150, 130, 0.3);
+            backdrop-filter: blur(4px);
+            border: 1px solid var(--border-light);
+            border-radius: 60px;
+            padding: 0.5rem 1.8rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+        }
+
+        .edit-info-btn:hover {
+            background: rgba(150, 130, 110, 0.5);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px var(--shadow-color);
+        }
+
+        .info-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(200, 180, 160, 0.5);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 2rem 1rem;
+            overflow-y: auto;
+        }
+
+        .info-card {
+            max-width: 440px;
+            width: 90%;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 48px;
+            padding: 2rem 2.2rem 2.2rem;
+            box-shadow: 0 25px 40px -15px #9a8572;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: slideUp 0.3s ease;
+            margin: auto;
+            max-height: calc(100vh - 4rem);
+            overflow-y: auto;
+        }
+
+        .info-card::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .info-card::-webkit-scrollbar-track {
+            background: rgba(200, 175, 150, 0.1);
+            border-radius: 10px;
+        }
+
+        .info-card::-webkit-scrollbar-thumb {
+            background: var(--accent-wood);
+            border-radius: 10px;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .info-card h2 {
+            font-size: 2rem;
+            font-weight: 500;
+            margin-bottom: 0.3rem;
+            letter-spacing: -0.01em;
+            color: var(--accent-wood);
+        }
+
+        .info-card p {
+            color: var(--text-secondary);
+            margin: 0.5rem 0 1.8rem;
+            font-size: 1rem;
+            border-left: 4px solid #dac5b2;
+            padding-left: 1.2rem;
+        }
+
+        .info-field {
+            margin-bottom: 1.4rem;
+        }
+
+        .info-field label {
+            font-weight: 500;
+            display: block;
+            margin-bottom: 0.3rem;
+            margin-left: 0.8rem;
+            color: var(--accent-wood);
+            font-size: 0.95rem;
+        }
+
+        .info-field input, .info-field select {
+            width: 100%;
+            background: rgba(255, 250, 240, 0.9);
+            border: 2px solid #e8dccc;
+            border-radius: 50px;
+            padding: 0.9rem 1.4rem;
+            font-size: 1rem;
+            outline: none;
+            font-family: inherit;
+            transition: all 0.2s;
+            color: #4f4236;
+        }
+
+        body.dark-mode .info-field input,
+        body.dark-mode .info-field select {
+            background: rgba(60, 50, 40, 0.9);
+            border-color: #5f5243;
+            color: #e0d8d0;
+        }
+
+        .info-field input:focus, .info-field select:focus {
+            border-color: #c9b09b;
+            box-shadow: 0 0 0 4px rgba(200, 170, 145, 0.2);
+            background: white;
+        }
+
+        .info-hint {
+            background: rgba(200, 175, 150, 0.2);
+            backdrop-filter: blur(4px);
+            border-radius: 28px;
+            padding: 1rem 1.4rem;
+            margin: 1.8rem 0 1.8rem;
+            font-size: 0.95rem;
+            border-left: 6px solid #d2b9a3;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .enter-btn {
+            background: linear-gradient(145deg, #7f6e5d, #655548);
+            color: white;
+            border: none;
+            border-radius: 60px;
+            padding: 1rem 1.8rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #948372;
+            box-shadow: 0 10px 20px -8px #6b5b4c;
+        }
+
+        .enter-btn:hover {
+            background: linear-gradient(145deg, #8f7e6d, #756555);
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px -10px #6b5b4c;
+        }
+
+        .seller-verify-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1100;
+            padding: 2rem 1rem;
+            overflow-y: auto;
+        }
+
+        .verify-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 48px;
+            padding: 2rem 2.2rem;
+            max-width: 380px;
+            width: 90%;
+            box-shadow: 0 30px 50px -15px #5f5243;
+            border: 1px solid rgba(255,255,255,0.3);
+            margin: auto;
+        }
+
+        .verify-card h3 {
+            font-size: 1.8rem;
+            font-weight: 500;
+            color: var(--accent-wood);
+            margin-bottom: 0.8rem;
+        }
+
+        .verify-card input {
+            width: 100%;
+            padding: 0.9rem 1.4rem;
+            border-radius: 60px;
+            border: 2px solid #e0d2c2;
+            font-size: 1rem;
+            margin: 0.8rem 0 1.5rem;
+            background: rgba(255,250,240,0.8);
+        }
+
+        .verify-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .verify-actions button {
+            flex: 1;
+            padding: 0.9rem;
+            border-radius: 60px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.2s;
+        }
+
+        #verifySubmit {
+            background: linear-gradient(145deg, #7f6e5d, #655548);
+            color: white;
+            border: 1px solid #948372;
+        }
+
+        #verifyCancel {
+            background: #e5dbd0;
+            color: #5f5243;
+            border: 1px solid #c9bbaa;
+        }
+
+        body.dark-mode #verifyCancel {
+            background: #4f4236;
+            color: #e0d8d0;
+        }
+
+        .seller-panel {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 56px;
+            padding: 2.2rem;
+            margin-bottom: 2.5rem;
+            border: 1px solid var(--border-light);
+            box-shadow: 0 20px 35px -15px var(--shadow-color);
+        }
+
+        .seller-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .seller-title h2 {
+            font-size: 2.2rem;
+            font-weight: 500;
+            color: var(--accent-wood);
+        }
+
+        .exit-seller-btn {
+            background: rgba(160, 140, 120, 0.3);
+            backdrop-filter: blur(4px);
+            border: 1px solid var(--border-light);
+            border-radius: 60px;
+            padding: 0.6rem 2rem;
+            font-size: 1rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .exit-seller-btn:hover {
+            background: rgba(140, 120, 100, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .seller-subtitle {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin: 2rem 0 1.2rem;
+            color: var(--accent-wood);
+            border-left: 8px solid #dac5b2;
+            padding-left: 1.5rem;
+        }
+
+        .ip-monitor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .ip-card {
+            background: rgba(200, 175, 150, 0.1);
+            backdrop-filter: blur(8px);
+            border-radius: 32px;
+            padding: 1.2rem;
+            border: 1px solid var(--border-light);
+        }
+
+        .ip-card.monitored {
+            border-left: 6px solid #b5673a;
+            background: rgba(200, 100, 50, 0.05);
+        }
+
+        .ip-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .ip-address {
+            font-family: monospace;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent-wood);
+        }
+
+        .ip-status {
+            padding: 0.2rem 1rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            background: rgba(100, 100, 100, 0.2);
+        }
+
+        .ip-status.monitored {
+            background: #b5673a;
+            color: white;
+        }
+
+        .ip-detail {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            margin: 0.8rem 0;
+            font-size: 0.9rem;
+        }
+
+        .unblock-btn {
+            background: #5f7b6a;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 0.3rem 1rem;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: 0.2s;
+        }
+
+        .unblock-btn:hover {
+            background: #4e6856;
+            transform: translateY(-1px);
+        }
+
+        .export-btn {
+            background: var(--accent-wood);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            padding: 0.6rem 1.5rem;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+
+        .manage-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.8rem;
+            margin-bottom: 2rem;
+        }
+
+        .manage-card {
+            background: rgba(200, 175, 150, 0.1);
+            backdrop-filter: blur(8px);
+            border-radius: 40px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-light);
+            box-shadow: 0 10px 20px -8px var(--shadow-color);
+            transition: all 0.2s;
+        }
+
+        .manage-card:hover {
+            background: rgba(200, 175, 150, 0.2);
+            transform: translateY(-4px);
+        }
+
+        .manage-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .manage-card-header h4 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--accent-wood);
+        }
+
+        .manage-condition {
+            background: rgba(200, 175, 150, 0.4);
+            border-radius: 30px;
+            padding: 0.2rem 1rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .manage-desc {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 1.2rem;
+            background: rgba(200, 175, 150, 0.1);
+            padding: 0.8rem;
+            border-radius: 24px;
+        }
+
+        .manage-price {
+            margin-bottom: 0.8rem;
+        }
+
+        .edit-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .edit-btn {
+            flex: 1;
+            padding: 0.5rem;
+            border-radius: 40px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            background: var(--accent-wood);
+            color: white;
+        }
+
+        .edit-btn:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+        }
+
+        .edit-form {
+            background: rgba(200, 175, 150, 0.2);
+            border-radius: 32px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .edit-form input, .edit-form select, .edit-form textarea {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            margin-bottom: 0.8rem;
+            border: 2px solid var(--border-light);
+            border-radius: 30px;
+            background: var(--card-bg);
+            color: var(--text-primary);
+        }
+
+        .edit-form textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .edit-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .save-edit-btn, .cancel-edit-btn {
+            flex: 1;
+            padding: 0.6rem;
+            border-radius: 40px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .save-edit-btn {
+            background: var(--accent-free);
+            color: white;
+        }
+
+        .cancel-edit-btn {
+            background: rgba(160, 140, 120, 0.5);
+            color: var(--text-primary);
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 500px;
+            border-radius: 40px;
+            background: rgba(200, 175, 150, 0.1);
+            backdrop-filter: blur(4px);
+            box-shadow: 0 8px 20px -8px var(--shadow-color);
+        }
+
+        .visitor-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1200px;
+            background: rgba(200, 175, 150, 0.1);
+            backdrop-filter: blur(8px);
+        }
+
+        .visitor-table thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .visitor-table th {
+            background: rgba(170, 150, 130, 0.8);
+            backdrop-filter: blur(8px);
+            color: var(--text-primary);
+            font-weight: 600;
+            padding: 1.2rem 1rem;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .visitor-table td {
+            padding: 1rem 1rem;
+            border-bottom: 1px solid var(--border-light);
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .visitor-table tbody tr:hover {
+            background: rgba(200, 175, 150, 0.2);
+        }
+
+        .item-badge {
+            background: rgba(180, 160, 140, 0.3);
+            border-radius: 30px;
+            padding: 0.2rem 1rem;
+            display: inline-block;
+            margin: 0.2rem;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .section-title {
+            margin: 2.5rem 0 1.8rem;
+            font-size: 2.2rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--accent-wood);
+            flex-wrap: wrap;
+        }
+
+        .section-title small {
+            font-size: 1rem;
+            background: rgba(200, 175, 150, 0.3);
+            backdrop-filter: blur(4px);
+            border-radius: 100px;
+            padding: 0.3rem 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .search-bar {
+            margin: 1.5rem 0;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border-radius: 60px;
+            border: 2px solid var(--border-light);
+            background: var(--card-bg);
+            color: var(--text-primary);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .search-bar input:focus {
+            border-color: var(--accent-wood);
+            box-shadow: 0 0 0 4px rgba(150, 120, 100, 0.2);
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .item-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 32px;
+            padding: 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 15px 30px -12px var(--shadow-color);
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .item-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 35px -14px var(--shadow-color);
+        }
+
+        .item-card.free-border {
+            border-left: 6px solid var(--accent-free);
+        }
+
+        .item-card.paid-border {
+            border-left: 6px solid var(--accent-paid);
+        }
+
+        .item-img {
+            width: 100%;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+            border-radius: 24px;
+            background: linear-gradient(145deg, #f0e6dc, #e2d4c4);
+            margin-bottom: 0.8rem;
+            border: 1px solid var(--border-light);
+        }
+
+        .item-name {
+            font-size: 1.3rem;
+            font-weight: 500;
+            color: var(--accent-wood);
+            margin-bottom: 0.3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .item-price-tag {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .item-price-tag.free {
+            color: var(--accent-free);
+        }
+
+        .item-price-tag.paid {
+            color: var(--accent-paid);
+        }
+
+        .item-detail-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 2rem 1rem;
+        }
+
+        .item-detail-card {
+            max-width: 500px;
+            width: 90%;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 48px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 30px 50px -20px #00000050;
+            animation: slideUp 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .item-detail-card .item-img-large {
+            width: 100%;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+            border-radius: 32px;
+            margin-bottom: 1.5rem;
+            border: 2px solid var(--border-light);
+        }
+
+        .item-detail-name {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--accent-wood);
+            margin-bottom: 0.5rem;
+        }
+
+        .item-detail-price {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .item-detail-desc {
+            background: rgba(200, 175, 150, 0.1);
+            border-radius: 24px;
+            padding: 1.2rem;
+            margin: 1rem 0;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        .item-detail-condition {
+            margin-bottom: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .detail-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .detail-select-btn {
+            flex: 1;
+            background: var(--accent-wood);
+            color: white;
+            border: none;
+            border-radius: 60px;
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .detail-select-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px var(--shadow-color);
+        }
+
+        .detail-select-btn.selected {
+            background: var(--accent-free);
+        }
+
+        .detail-select-btn:disabled {
+            background: rgba(160, 150, 140, 0.5);
+            cursor: not-allowed;
+        }
+
+        .detail-close-btn {
+            flex: 0 0 auto;
+            background: rgba(160, 140, 120, 0.3);
+            color: var(--text-primary);
+            border: 1px solid var(--border-light);
+            border-radius: 60px;
+            padding: 1rem 1.5rem;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .detail-close-btn:hover {
+            background: rgba(140, 120, 100, 0.5);
+        }
+
+        .selection-summary {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 60px;
+            padding: 1.2rem 2rem;
+            margin: 2rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 1.15rem;
+            box-shadow: 0 8px 20px -8px var(--shadow-color);
+        }
+
+        .free-counter, .paid-counter {
+            background: rgba(200, 175, 150, 0.3);
+            backdrop-filter: blur(4px);
+            border-radius: 40px;
+            padding: 0.4rem 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .submit-claim-btn {
+            background: linear-gradient(145deg, #7f6e5d, #655548);
+            color: white;
+            border: none;
+            border-radius: 60px;
+            padding: 1.3rem 2rem;
+            font-size: 1.6rem;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid #948372;
+            box-shadow: 0 12px 28px -10px var(--shadow-color);
+            margin-bottom: 2rem;
+        }
+
+        .submit-claim-btn:hover:not(:disabled) {
+            background: linear-gradient(145deg, #8f7e6d, #756555);
+            transform: translateY(-3px);
+        }
+
+        .submit-claim-btn:disabled {
+            background: rgba(160, 150, 140, 0.5);
+            cursor: not-allowed;
+        }
+
+        .message-area {
+            margin-top: 1.5rem;
+            border-radius: 60px;
+            padding: 1.2rem 2rem;
+            background: rgba(160, 180, 140, 0.3);
+            backdrop-filter: blur(8px);
+            border-left: 8px solid var(--accent-free);
+            display: none;
+        }
+
+        .message-area.show {
+            display: block;
+        }
+
+        .selected-items-display {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            border-radius: 48px;
+            padding: 1.2rem 2rem;
+            margin: 1.5rem 0;
+            font-size: 1.1rem;
+            border: 1px solid var(--border-light);
+            color: var(--text-secondary);
+        }
+
+        .sync-badge {
+            background: rgba(140, 120, 100, 0.3);
+            backdrop-filter: blur(4px);
+            border-radius: 40px;
+            padding: 0.2rem 1rem;
+            font-size: 0.85rem;
+            margin-left: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .floral-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-wood), #b8a28c, var(--accent-wood), transparent);
+            margin: 2rem 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: rgba(200, 175, 150, 0.1);
+            border-radius: 40px;
+            border: 1px solid var(--border-light);
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(200, 175, 150, 0.2);
+            border-radius: 32px;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--accent-wood);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-switch" id="themeSwitch">
+        <span>🌓</span> 切换主题
+    </div>
+
+    <div class="item-detail-overlay" id="itemDetailOverlay">
+        <div class="item-detail-card" id="itemDetailCard"></div>
+    </div>
+
+    <div class="container" id="appContainer">
+        <div class="visitor-panel" id="visitorPanel" style="display: none;">
+            <div class="greeting">
+                <span>👤 访客</span>
+                <div class="badge-info">
+                    <i id="displayNickname"></i>
+                    <i id="displayGender"></i>
+                    <i id="displayCampus"></i>
+                    <i id="displayStudentId"></i>
+                    <i id="displayQQ"></i>
+                </div>
+            </div>
+            <button class="edit-info-btn" id="editInfoBtn">✎ 修改信息</button>
+        </div>
+
+        <div class="seller-panel" id="sellerPanel" style="display: none;">
+            <div class="seller-title">
+                <h2>🔐 卖家后台 · 管理面板</h2>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button class="export-btn" id="exportVisitorBtn">📥 导出访客记录</button>
+                    <button class="exit-seller-btn" id="exitSellerBtn">退出后台</button>
+                </div>
+            </div>
+            
+            <div class="stats-grid" id="statsGrid"></div>
+            
+            <div class="seller-subtitle">🌐 IP监测面板 (同一IP使用>2个学号触发监测)</div>
+            <div class="ip-monitor-grid" id="ipMonitorGrid"></div>
+            
+            <div class="seller-subtitle">📦 物品申领管理 (卖家修改优先)</div>
+            <div class="manage-grid" id="manageGrid"></div>
+            
+            <div class="seller-subtitle">👥 访客记录 (可横向/纵向拖动)</div>
+            <div class="table-wrapper">
+                <table class="visitor-table" id="visitorTable">
+                    <thead>
+                        <tr>
+                            <th>昵称</th>
+                            <th>性别</th>
+                            <th>校区</th>
+                            <th>学号</th>
+                            <th>QQ</th>
+                            <th>已申领物品</th>
+                            <th>首次浏览</th>
+                            <th>最后活动</th>
+                            <th>IP地址</th>
+                            <th>IP状态</th>
+                        </tr>
+                    </thead>
+                    <tbody id="visitorTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="info-overlay" id="infoOverlay">
+            <div class="info-card">
+                <h2>✨ 小彳金金·物舍</h2>
+                <p>每一件物品，都有一段故事</p>
+                <div class="info-field">
+                    <label>昵称</label>
+                    <input type="text" id="nicknameInput" placeholder="怎么称呼你？" autocomplete="off">
+                </div>
+                <div class="info-field">
+                    <label>性别</label>
+                    <select id="genderInput">
+                        <option value="保密">⚪ 保密</option>
+                        <option value="男">♂️ 男</option>
+                        <option value="女">♀️ 女</option>
+                    </select>
+                </div>
+                <div class="info-field">
+                    <label>校区</label>
+                    <select id="campusInput">
+                        <option value="将军路校区">将军路校区</option>
+                        <option value="天目湖校区">天目湖校区</option>
+                        <option value="明故宫校区">明故宫校区</option>
+                    </select>
+                </div>
+                <div class="info-field">
+                    <label>学号</label>
+                    <input type="text" id="studentIdInput" placeholder="" autocomplete="off">
+                </div>
+                <div class="info-field">
+                    <label>QQ号</label>
+                    <input type="text" id="qqInput" placeholder="用于联系">
+                </div>
+                <div class="info-hint">
+                    💡 每人最多可申领 <strong>3件免费物品</strong>，付费不限。<br>
+                    已申领的物品会永久记录，再次登录仍会保留。<br>
+                    🔒 系统会记录IP地址，同一IP使用超过2个不同学号将触发监测，请大家不要捣乱。<br>
+                    ✨ 所有物品均为真实闲置，请珍惜相遇。
+                </div>
+                <button class="enter-btn" id="enterSiteBtn">进入拾光空间 →</button>
+            </div>
+        </div>
+
+        <div class="seller-verify-overlay" id="sellerVerifyOverlay">
+            <div class="verify-card">
+                <h3>🔒 卖家验证</h3>
+                <p>请输入卖家的生日</p>
+                <input type="text" id="birthdayInput" placeholder="例如：2000-01-01">
+                <div class="verify-actions">
+                    <button id="verifySubmit">验证</button>
+                    <button id="verifyCancel">取消</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="mainContent" style="display: none;">
+            <div class="section-title">
+                📦 今日好物 
+                <small>点击图片查看详情</small>
+            </div>
+            
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="🔍 搜索物品名称或描述...">
+            </div>
+            
+            <div class="items-grid" id="itemsGrid"></div>
+
+            <div class="selection-summary" id="selectionSummary">
+                <span class="free-counter" id="freeCountDisplay">免费 0/3</span>
+                <span class="paid-counter" id="paidCountDisplay">付费 0 件</span>
+                <span>🔄 点击物品可取消</span>
+            </div>
+
+            <div class="selected-items-display" id="selectedItemsDisplay">
+                当前选中：<span id="selectedItemsList">（暂无）</span>
+            </div>
+
+            <div id="buyerSubmitContainer">
+                <button class="submit-claim-btn" id="submitClaimBtn" disabled>✓ 确认申领所选物品</button>
+            </div>
+
+            <div class="message-area" id="messageArea">
+                <span id="messageText"></span>
+                <button id="closeMsgBtn" style="background:none;border:1px solid var(--border-light);border-radius:40px;padding:0.3rem 1.2rem;margin-left:1rem;color:var(--text-secondary);">关闭</button>
+            </div>
+            
+            <div class="floral-divider"></div>
+            <p style="text-align:center; color:var(--text-secondary); font-style:italic;">每一件物品，都值得被温柔以待</p>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const SELLER = {
+                nickname: 'majes',
+                gender: '男',
+                studentId: '082240120',
+                campus: '将军路校区',
+                qq: '3371476457',
+                birthday: '2004-10-22'
+            };
+
+            // 物品基础数据
+            const baseItems = [
+                    { id: 'p1', name: '数学分析中的典型问题与方法-裴礼文', description: '数学专业考研竞赛必备，前半部分笔记较多，多元微积分部分笔记较少', condition: '3新', priceType: 'free', price: 0, image: '/images/market_1.jpg', claimed: false },
+                    { id: 'p2', name: '数学分析习题课讲义-谢惠民', description: '数学专业进阶必备，拼多多买的盗版(但整体质量还行)，上册与下册前半部分笔记较多', condition: '3新', priceType: 'free', price: 0, image: '/images/market_2.jpg', claimed: false },
+                    { id: 'p3', name: '拓扑学-曼克勒斯(中文)', description: '拓扑学入门圣经，前半部分点集拓扑，后半部分代数拓扑，有一点笔记', condition: '5新', priceType: 'free', price: 0, image: '/images/market_3.jpg', claimed: false },
+                    { id: 'p4', name: '高等代数白皮书-谢启鸿', description: '考研竞赛必备高等代数习题集，笔记较多', condition: '3新', priceType: 'free', price: 0, image: '/images/market_4.jpg', claimed: false },
+                    { id: 'p5', name: 'EVA-明日香', description: '日本原装，无保护套', condition: '95新', priceType: 'free', price: 0, image: '/images/market_5.jpg', claimed: false },
+                    { id: 'p6', name: '咒术回战-漏壶', description: '日本原装，有保护套', condition: '95新', priceType: 'free', price: 0, image: '/images/market_6.jpg', claimed: false },
+                    { id: 'p7', name: '咒术回战-宿傩', description: '日本原装，钥匙扣', condition: '95新', priceType: 'free', price: 0, image: '/images/market_7.jpg', claimed: false },
+                    { id: 'p8', name: '咒术回战-伏黑惠', description: '日本原装，无保护套', condition: '95新', priceType: 'free', price: 0, image: '/images/market_8.jpg', claimed: false },
+                    { id: 'p9', name: '咒术回战-五条悟&夏油杰', description: '日本原装，钥匙扣', condition: '95新', priceType: 'free', price: 0, image: '/images/market_9.jpg', claimed: false },
+                    { id: 'p10', name: 'EVA-凌波丽', description: '日本原装，无保护套', condition: '95新', priceType: 'free', price: 0, image: '/images/market_10.jpg', claimed: false },
+                    { id: 'p11', name: 'Re0-艾姬多娜', description: '日本原装，无保护套', condition: '95新', priceType: 'free', price: 0, image: '/images/market_11.jpg', claimed: false },
+                    { id: 'p12', name: '莉可丽丝-千束', description: '日本原装，立牌', condition: '95新', priceType: 'free', price: 0, image: '/images/market_12.jpg', claimed: false },
+                    { id: 'p13', name: '莉可丽丝-千束', description: '日本原装，小画牌', condition: '95新', priceType: 'free', price: 0, image: '/images/market_13.jpg', claimed: false },
+                    { id: 'p14', name: '鬼灭之刃-炭治郎', description: '日本原装，无保护套', condition: '95新', priceType: 'free', price: 0, image: '/images/market_14.jpg', claimed: false },
+                    { id: 'p15', name: '咒术回战-狗卷', description: '日本原装，无保护套', condition: '95新', priceType: 'free', price: 0, image: '/images/market_15.jpg', claimed: false },
+                    { id: 'p16', name: '咒术回战-五条悟', description: '日本原装，无保护套', condition: '95新', priceType: 'free', price: 0, image: '/images/market_16.jpg', claimed: false },
+                    { id: 'p17', name: '咒术回战-七海', description: '日本原装，钥匙扣', condition: '95新', priceType: 'free', price: 0, image: '/images/market_17.jpg', claimed: false },
+                    { id: 'p18', name: 'EVA-明日香', description: '日本原装，无保护套', condition: '95新', priceType: 'free', price: 0, image: '/images/market_18.jpg', claimed: false },
+                    { id: 'p19', name: '名侦探柯南-灰原哀', description: '日本原装，有保护套；略有锈迹，可自己清洗的程度', condition: '9新', priceType: 'free', price: 0, image: '/images/market_19.jpg', claimed: false },
+                    { id: 'p20', name: '咒术回战-乙骨忧太', description: '日本原装，胸牌', condition: '95新', priceType: 'free', price: 0, image: '/images/market_20.jpg', claimed: false },
+                    { id: 'p21', name: '咒术回战-五条悟&伏黑&虎杖', description: '日本原装，无保护套', condition: '95新', priceType: 'free', price: 0, image: '/images/market_21.jpg', claimed: false },
+                    { id: 'p22', name: '咒术回战-乙骨忧太', description: '日本原装，无保护套', condition: '95新', priceType: 'free', price: 0, image: '/images/market_22.jpg', claimed: false },
+                    { id: 'p23', name: '鬼灭之刃-原画扑克牌', description: '日本原装，典藏卡牌', condition: '95新', priceType: 'paid', price: 10, image: '/images/market_23.jpg', claimed: false },
+                    { id: 'p24', name: 'Re0-艾蜜莉雅', description: '日本原装，挂坠', condition: '95新', priceType: 'free', price: 0, image: '/images/market_24.jpg', claimed: false },
+                    { id: 'p25', name: '莉可丽丝-挂坠', description: '日本原装', condition: '95新', priceType: 'free', price: 0, image: '/images/market_25.jpg', claimed: false },
+                    { id: 'p26', name: '鬼灭之刃-弥豆子', description: '日本原装，无保护套', condition: '95新', priceType: 'free', price: 0, image: '/images/market_26.jpg', claimed: false },
+                    { id: 'p27', name: '鬼灭之刃-大哥', description: '日本原装，无保护套', condition: '95新', priceType: 'free', price: 0, image: '/images/market_27.jpg', claimed: false },
+                    { id: 'p28', name: '咒术回战-五条悟', description: '日本原装，无保护套', condition: '95新', priceType: 'free', price: 0, image: '/images/market_28.jpg', claimed: false },
+                    { id: 'p29', name: '咒术回战-夏油杰', description: '日本原装，无保护套', condition: '95新', priceType: 'free', price: 0, image: '/images/market_29.jpg', claimed: false },
+                    { id: 'p30', name: '伏见稻荷大社纪念冰箱贴', description: '日本景区买入的中国制造产品', condition: '95新', priceType: 'free', price: 0, image: '/images/market_30.jpg', claimed: false },
+                    { id: 'p31', name: '咒术回战-夏油杰', description: '日本原装，打卡牌', condition: '95新', priceType: 'free', price: 0, image: '/images/market_31.jpg', claimed: false },
+                    { id: 'p32', name: '咒术回战-伏黑惠', description: '日本原装，亚克力牌', condition: '95新', priceType: 'free', price: 0, image: '/images/market_32.jpg', claimed: false },
+                    { id: 'p33', name: '五等份的花嫁-三玖', description: '日本原装，大立牌', condition: '95新', priceType: 'free', price: 0, image: '/images/market_33.jpg', claimed: false },
+                    { id: 'p34', name: '咒术回战-虎天帝', description: '日本原装，无保护套', condition: '95新', priceType: 'free', price: 0, image: '/images/market_34.jpg', claimed: false },
+                    { id: 'p35', name: '莉可丽丝', description: '日本原装，亚克力牌', condition: '95新', priceType: 'free', price: 0, image: '/images/market_35.jpg', claimed: false },
+                    { id: 'p36', name: '名侦探柯南-赤井秀一', description: '日本原装，字母处是分开的（应该不是断裂而是本来就是分开的）', condition: '95新', priceType: 'free', price: 0, image: '/images/market_36.jpg', claimed: false },
+                    { id: 'p37', name: '咒术回战-脑花', description: '日本原装，大立牌', condition: '95新', priceType: 'free', price: 0, image: '/images/market_37.jpg', claimed: false },
+                    { id: 'p38', name: '名侦探柯南-安室透', description: '日本原装，钥匙扣', condition: '95新', priceType: 'free', price: 0, image: '/images/market_38.jpg', claimed: false },
+                    { id: 'p39', name: '五等分的花嫁-五月', description: '日本原装，无保护套', condition: '95新', priceType: 'free', price: 0, image: '/images/market_39.jpg', claimed: false },
+                    { id: 'p40', name: '名侦探柯南-柯南', description: '日本原装，挂坠', condition: '95新', priceType: 'free', price: 0, image: '/images/market_40.jpg', claimed: false },
+                    { id: 'p41', name: '一生一世', description: '柿子小玩偶', condition: '95新', priceType: 'free', price: 0, image: '/images/market_41.jpg', claimed: false },
+                    { id: 'p42', name: '咒术回战-宿傩', description: '日本原装，无保护套', condition: '95新', priceType: 'free', price: 0, image: '/images/market_42.jpg', claimed: false },
+                    { id: 'p43', name: 'Hello kitty', description: '日本买入的(非正版)挂坠', condition: '95新', priceType: 'free', price: 0, image: '/images/market_43.jpg', claimed: false },
+                    { id: 'p44', name: 'Chiikawa', description: '日本买入的(非正版)玩偶', condition: '95新', priceType: 'free', price: 0, image: '/images/market_44.jpg', claimed: false },
+                    { id: 'p45', name: '咒术回战-五条悟', description: '日本原装小玩偶', condition: '95新', priceType: 'free', price: 0, image: '/images/market_45.jpg', claimed: false },
+                    { id: 'p46', name: '咒术回战-脑花', description: '日本原装小玩偶', condition: '95新', priceType: 'free', price: 0, image: '/images/market_46.jpg', claimed: false },
+                    { id: 'p47', name: '排球少年', description: '日本原装，无保护套', condition: '95新', priceType: 'free', price: 0, image: '/images/market_47.jpg', claimed: false },
+                    { id: 'p48', name: '25年7月周刊少年jump连载漫画', description: '日语，黑白', condition: '5新', priceType: 'free', price: 0, image: '/images/market_48.jpg', claimed: false },
+                    { id: 'p49', name: '虹色复调', description: '米山舞等多位插画师原画集，bilibili正版', condition: '95新', priceType: 'paid', price: 30, image: '/images/market_49.jpg', claimed: false },
+                    { id: 'p50', name: '鬼灭之刃-大哥', description: '不倒翁', condition: '95新', priceType: 'free', price: 0, image: '/images/market_51.jpg', claimed: false },
+                    { id: 'p51', name: '超级无敌大骰子', description: '只是一个大一点的骰子', condition: '95新', priceType: 'free', price: 0, image: '/images/market_52.jpg', claimed: false },
+                    { id: 'p52', name: '哆啦A梦', description: '有齿轮，可以往前跑', condition: '95新', priceType: 'free', price: 0, image: '/images/market_53.jpg', claimed: false },
+                    { id: 'p53', name: '皮卡丘', description: '就是小智的那一只', condition: '95新', priceType: 'free', price: 0, image: '/images/market_54.jpg', claimed: false },
+                    { id: 'p54', name: '咒术回战-年轻七海', description: '日本扭蛋机扭出来的', condition: '95新', priceType: 'free', price: 0, image: '/images/market_55.jpg', claimed: false },
+                    { id: 'p55', name: '名侦探柯南-柯南', description: '变小的新一', condition: '95新', priceType: 'free', price: 0, image: '/images/market_56.jpg', claimed: false },
+                    { id: 'p56', name: '基拉祈', description: '宝可梦，里面是空心的', condition: '95新', priceType: 'free', price: 0, image: '/images/market_57.jpg', claimed: false },
+                    { id: 'p57', name: '咒术回战-乙骨忧太', description: '日本原装手办，带盒子', condition: '95新', priceType: 'paid', price: 25, image: '/images/market_58.jpg', claimed: false },
+                    { id: 'p58', name: '狼与香辛料-赫萝', description: '日本原装手办，带盒子', condition: '95新', priceType: 'paid', price: 20, image: '/images/market_59.jpg', claimed: false },
+                    { id: 'p59', name: '莉可丽丝-泷奈', description: '日本原装手办，带盒子', condition: '95新', priceType: 'paid', price: 20, image: '/images/market_60.jpg', claimed: false },
+                    { id: 'p60', name: '名侦探柯南-灰原哀', description: 'keep限时奖牌,带盒子', condition: '95新', priceType: 'paid', price: 10, image: '/images/market_61.jpg', claimed: false },
+                    { id: 'p61', name: '高等代数-丘维声', description: '初学高代的圣经', condition: '7新', priceType: 'free', price: 0, image: '/images/market_62.jpg', claimed: false },
+                    { id: 'p62', name: '高等代数典型问题与方法-樊启斌', description: '备考考研竞赛高代的优秀资料，是拼多多影印版', condition: '5新', priceType: 'free', price: 0, image: '/images/market_63.jpg', claimed: false },
+                    { id: 'p63', name: '全国大学生数学竞赛教程-蒲和平', description: '非数学竞赛的圣经，是第一版', condition: '6新', priceType: 'free', price: 0, image: '/images/market_64.jpg', claimed: false },
+                    { id: 'p64', name: '统计学习方法-李航', description: '是自己打印订装的版本，不是书', condition: '8新', priceType: 'free', price: 0, image: '/images/market_65.jpg', claimed: false },
+                    { id: 'p65', name: '最优化理论与方法-文再文', description: '是自己打印订装的版本，不是书，有少许笔记', condition: '7新', priceType: 'free', price: 0, image: '/images/market_66.jpg', claimed: false },
+                    { id: 'p66', name: '复变函数-史济怀', description: '拥有最难习题的复变教材，是自己订装的版本，不是书，有部分笔记', condition: '6新', priceType: 'free', price: 0, image: '/images/market_67.jpg', claimed: false },
+                    { id: 'p67', name: '线性代数-李炯生', description: '曾被誉为亚洲最难线性代数教材，有部分笔记', condition: '7新', priceType: 'free', price: 0, image: '/images/market_68.jpg', claimed: false },
+                    { id: 'p68', name: '基础复分析-崔贵珍', description: '101计划国科大用书', condition: '9新', priceType: 'free', price: 0, image: '/images/market_69.jpg', claimed: false },
+                    { id: 'p69', name: '复变函数论-钟玉泉', description: '第四版，中规中矩的复变教材', condition: '6新', priceType: 'free', price: 0, image: '/images/market_70.jpg', claimed: false },
+                    { id: 'p70', name: '抽象代数-dummit', description: '纯英文教材，拼多多影印版，代数学入门的好教材，九百多页', condition: '7新', priceType: 'free', price: 0, image: '/images/market_71.jpg', claimed: false },
+                    { id: 'p71', name: '挪威的森林-村上春树', description: '淘宝影印版', condition: '9新', priceType: 'free', price: 0, image: '/images/market_72.jpg', claimed: false },
+                    { id: 'p72', name: '献给阿尔吉侬的花束-丹尼尔', description: '原装正版，内容一绝，非常值得一读', condition: '99新', priceType: 'free', price: 0, image: '/images/market_73.jpg', claimed: false },
+                    { id: 'p73', name: '漫长的告别-雷蒙德', description: '具有诺贝尔奖级文学性的推理小说', condition: '99新', priceType: 'free', price: 0, image: '/images/market_74.jpg', claimed: false },
+                    { id: 'p74', name: '玻璃之锤-贵志佑介', description: '被誉为“为推理小说续命50年”的新本格佳作', condition: '95新', priceType: 'free', price: 0, image: '/images/market_75.jpg', claimed: false },
+                    { id: 'p75', name: '消失的13级台阶-高野和明', description: '罗翔老师推荐', condition: '95新', priceType: 'free', price: 0, image: '/images/market_76.jpg', claimed: false },
+                    { id: 'p76', name: '病隙碎笔-史铁生', description: '无需多言', condition: '99新', priceType: 'free', price: 0, image: '/images/market_77.jpg', claimed: false },
+                    { id: 'p77', name: '务虚笔记-史铁生', description: '依旧无需多言', condition: '99新', priceType: 'free', price: 0, image: '/images/market_78.jpg', claimed: false },
+                    { id: 'p78', name: '基础拓扑学讲义-尤承业', description: '国内最适合入门的拓扑学教材', condition: '7新', priceType: 'free', price: 0, image: '/images/market_79.jpg', claimed: false },
+                    { id: 'p79', name: '数学分析习题课演练(全三册)-周民强', description: '国内最难数学分析习题集，但是有少部分印刷错误，也有极少部分题目错误', condition: '8新', priceType: 'free', price: 0, image: '/images/market_80.jpg', claimed: false }
+                ];
+
+            function loadItems() {
+                const savedItems = localStorage.getItem('items');
+                if (savedItems) {
+                    try {
+                        const parsed = JSON.parse(savedItems);
+                        if (Array.isArray(parsed) && parsed.length > 0) {
+                            return parsed;
+                        }
+                    } catch (e) {
+                        console.error('加载物品失败', e);
+                    }
+                }
+                return baseItems;
+            }
+
+            function saveItems(items) {
+                localStorage.setItem('items', JSON.stringify(items));
+                window.dispatchEvent(new Event('storage'));
+            }
+
+            let items = loadItems();
+            let filteredItems = [...items];
+            let searchKeyword = '';
+            
+            let visitors = JSON.parse(localStorage.getItem('visitors') || '[]');
+            let currentVisitor = null;
+            let selectedItemIds = [];
+            let isSellerMode = false;
+            let editingItemId = null;
+
+            const userClaimedItems = JSON.parse(localStorage.getItem('userClaimedItems') || '{}');
+
+            // ========== IP限流 ==========
+            let currentIP = null;
+            const ipRecords = JSON.parse(localStorage.getItem('ipRecords') || '{}');
+            const IP_BLOCK_THRESHOLD = 2;
+
+            async function getUserIP() {
+                const cachedIP = sessionStorage.getItem('userIP');
+                if (cachedIP) {
+                    currentIP = cachedIP;
+                    return currentIP;
+                }
+
+                try {
+                    const apis = [
+                        'https://api.ipify.org?format=json',
+                        'https://api.myip.com',
+                        'https://ipapi.co/json/'
+                    ];
+                    
+                    for (const api of apis) {
+                        try {
+                            const response = await fetch(api);
+                            const data = await response.json();
+                            currentIP = data.ip || data.ip_address;
+                            if (currentIP) {
+                                sessionStorage.setItem('userIP', currentIP);
+                                break;
+                            }
+                        } catch (e) {}
+                    }
+                    
+                    if (!currentIP) {
+                        currentIP = 'local_' + (localStorage.getItem('localId') || Math.random().toString(36).substring(7));
+                        localStorage.setItem('localId', currentIP);
+                        sessionStorage.setItem('userIP', currentIP);
+                    }
+                    
+                    return currentIP;
+                } catch (error) {
+                    currentIP = 'unknown_' + Math.random().toString(36).substring(7);
+                    sessionStorage.setItem('userIP', currentIP);
+                    return currentIP;
+                }
+            }
+
+            function checkIPLimit(studentId) {
+                if (!currentIP) return true;
+                
+                const now = Date.now();
+                const oneHour = 60 * 60 * 1000;
+                
+                if (!ipRecords[currentIP]) {
+                    ipRecords[currentIP] = {
+                        students: {},
+                        firstSeen: now,
+                        lastSeen: now,
+                        isMonitored: false,
+                        monitoredSince: null
+                    };
+                }
+                
+                const record = ipRecords[currentIP];
+                record.lastSeen = now;
+                
+                Object.keys(record.students).forEach(sid => {
+                    if (now - record.students[sid] > oneHour) {
+                        delete record.students[sid];
+                    }
+                });
+                
+                if (record.isMonitored) {
+                    alert('⚠️ 您的IP已被监测，请使用本人学号登录');
+                    return false;
+                }
+                
+                if (!record.students[studentId]) {
+                    record.students[studentId] = now;
+                }
+                
+                const uniqueStudents = Object.keys(record.students).length;
+                
+                if (uniqueStudents > IP_BLOCK_THRESHOLD) {
+                    record.isMonitored = true;
+                    record.monitoredSince = now;
+                    localStorage.setItem('ipRecords', JSON.stringify(ipRecords));
+                    alert('⚠️ 您使用同一IP地址进行了不同学号的登录，接下来您的行为将会受到监测');
+                    return false;
+                }
+                
+                localStorage.setItem('ipRecords', JSON.stringify(ipRecords));
+                return true;
+            }
+
+            function unblockIP(ip) {
+                if (ipRecords[ip]) {
+                    delete ipRecords[ip];
+                    localStorage.setItem('ipRecords', JSON.stringify(ipRecords));
+                    renderIPMonitorGrid();
+                    renderSellerTable();
+                }
+            }
+
+            function getIPStatus(ip) {
+                const record = ipRecords[ip];
+                if (!record) return { text: '正常', class: '' };
+                if (record.isMonitored) return { text: '⚠️ 被监测', class: 'monitored' };
+                const count = Object.keys(record.students || {}).length;
+                return { text: `${count}个学号`, class: '' };
+            }
+
+            // ========== 导出功能 ==========
+            function exportVisitorData() {
+                const data = visitors.map(v => {
+                    const claimedIds = userClaimedItems[v.studentId] || [];
+                    const claimedNames = claimedIds.map(id => {
+                        const item = items.find(i => i.id === id);
+                        return item ? `${item.name}${item.priceType === 'paid' ? '(' + item.price + '元)' : ''}` : id;
+                    }).join('、');
+                    
+                    const ipStatus = getIPStatus(v.ip);
+                    
+                    return {
+                        昵称: v.nickname || '',
+                        性别: v.gender || '保密',
+                        校区: v.campus || '',
+                        学号: v.studentId || '',
+                        QQ: v.qq || '',
+                        已申领物品: claimedNames || '无',
+                        首次浏览: v.firstAccess || '',
+                        最后活动: v.lastAccess || '',
+                        IP地址: v.ip || '未知',
+                        IP状态: ipStatus.text
+                    };
+                });
+                
+                const csv = convertToCSV(data);
+                const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `访客记录_${new Date().toLocaleDateString().replace(/\//g, '-')}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+
+            function convertToCSV(data) {
+                if (data.length === 0) return '';
+                const headers = Object.keys(data[0]);
+                const rows = data.map(obj => headers.map(header => {
+                    let cell = obj[header]?.toString() || '';
+                    if (cell.includes(',') || cell.includes('"') || cell.includes('\n')) {
+                        cell = '"' + cell.replace(/"/g, '""') + '"';
+                    }
+                    return cell;
+                }).join(','));
+                return [headers.join(','), ...rows].join('\n');
+            }
+
+            // ========== 暗色模式 ==========
+            function initTheme() {
+                const savedTheme = localStorage.getItem('theme');
+                if (savedTheme === 'dark') {
+                    document.body.classList.add('dark-mode');
+                }
+            }
+
+            function toggleTheme() {
+                document.body.classList.toggle('dark-mode');
+                localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+            }
+
+            function filterItems() {
+                filteredItems = items.filter(item => {
+                    const matchSearch = searchKeyword === '' || 
+                        (item.name && item.name.toLowerCase().includes(searchKeyword.toLowerCase())) ||
+                        (item.description && item.description.toLowerCase().includes(searchKeyword.toLowerCase()));
+                    return matchSearch;
+                });
+                
+                if (itemsGridEl) {
+                    itemsGridEl.innerHTML = '';
+                    filteredItems.forEach(item => {
+                        const card = createItemCard(item);
+                        itemsGridEl.appendChild(card);
+                    });
+                }
+            }
+
+            // ========== 统计 ==========
+            function renderStats() {
+                const statsGrid = document.getElementById('statsGrid');
+                if (!statsGrid) return;
+                
+                const totalItems = items.length;
+                const claimedItems = items.filter(i => i.claimed).length;
+                const totalUsers = visitors.length;
+                const totalFreeClaimed = Object.values(userClaimedItems)
+                    .flat()
+                    .filter(id => {
+                        const item = items.find(i => i.id === id);
+                        return item && item.priceType === 'free';
+                    }).length;
+                const monitoredIPs = Object.values(ipRecords).filter(r => r.isMonitored).length;
+                
+                statsGrid.innerHTML = `
+                    <div class="stat-item">
+                        <div class="stat-number">${totalItems}</div>
+                        <div class="stat-label">总物品</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">${claimedItems}</div>
+                        <div class="stat-label">已申领</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">${totalUsers}</div>
+                        <div class="stat-label">访客</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">${totalFreeClaimed}</div>
+                        <div class="stat-label">免费送出</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">${monitoredIPs}</div>
+                        <div class="stat-label">被监测IP</div>
+                    </div>
+                `;
+            }
+
+            // ========== IP监测面板 ==========
+            function renderIPMonitorGrid() {
+                const grid = document.getElementById('ipMonitorGrid');
+                if (!grid) return;
+                
+                const ips = Object.keys(ipRecords).sort((a, b) => 
+                    ipRecords[b].lastSeen - ipRecords[a].lastSeen
+                ).slice(0, 10);
+                
+                grid.innerHTML = ips.map(ip => {
+                    const record = ipRecords[ip];
+                    const studentCount = Object.keys(record.students || {}).length;
+                    const lastActive = new Date(record.lastSeen).toLocaleString();
+                    const students = Object.keys(record.students || {}).join(', ');
+                    
+                    return `
+                        <div class="ip-card ${record.isMonitored ? 'monitored' : ''}">
+                            <div class="ip-header">
+                                <span class="ip-address">${ip}</span>
+                                <span class="ip-status ${record.isMonitored ? 'monitored' : ''}">
+                                    ${record.isMonitored ? '⚠️ 被监测' : '正常'}
+                                </span>
+                            </div>
+                            <div class="ip-detail">
+                                <div>📊 使用学号: ${studentCount}个</div>
+                                <div>🆔 ${students || '无记录'}</div>
+                                <div>⏰ 最后活动: ${lastActive}</div>
+                            </div>
+                            ${record.isMonitored ? 
+                                `<button class="unblock-btn" data-ip="${ip}">解除监测</button>` : 
+                                ''}
+                        </div>
+                    `;
+                }).join('');
+                
+                grid.querySelectorAll('.unblock-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        unblockIP(btn.dataset.ip);
+                    });
+                });
+            }
+
+            function saveUserClaimedItems(studentId, claimedIds) {
+                userClaimedItems[studentId] = claimedIds;
+                localStorage.setItem('userClaimedItems', JSON.stringify(userClaimedItems));
+            }
+
+            function loadUserClaimedItems(studentId) {
+                return userClaimedItems[studentId] || [];
+            }
+
+            function getUserClaimedFreeCount(studentId) {
+                const claimedIds = loadUserClaimedItems(studentId);
+                return claimedIds.filter(id => {
+                    const item = items.find(i => i.id === id);
+                    return item && item.priceType === 'free';
+                }).length;
+            }
+
+            // DOM 元素
+            const infoOverlay = document.getElementById('infoOverlay');
+            const mainContent = document.getElementById('mainContent');
+            const visitorPanel = document.getElementById('visitorPanel');
+            const sellerPanel = document.getElementById('sellerPanel');
+            const sellerVerifyOverlay = document.getElementById('sellerVerifyOverlay');
+            const itemDetailOverlay = document.getElementById('itemDetailOverlay');
+            const itemDetailCard = document.getElementById('itemDetailCard');
+            const nicknameInput = document.getElementById('nicknameInput');
+            const genderInput = document.getElementById('genderInput');
+            const campusInput = document.getElementById('campusInput');
+            const studentIdInput = document.getElementById('studentIdInput');
+            const qqInput = document.getElementById('qqInput');
+            const enterBtn = document.getElementById('enterSiteBtn');
+            const editInfoBtn = document.getElementById('editInfoBtn');
+            const displayNickname = document.getElementById('displayNickname');
+            const displayGender = document.getElementById('displayGender');
+            const displayCampus = document.getElementById('displayCampus');
+            const displayStudentId = document.getElementById('displayStudentId');
+            const displayQQ = document.getElementById('displayQQ');
+            const itemsGridEl = document.getElementById('itemsGrid');
+            const freeCountDisplay = document.getElementById('freeCountDisplay');
+            const paidCountDisplay = document.getElementById('paidCountDisplay');
+            const selectedItemsList = document.getElementById('selectedItemsList');
+            const submitBtn = document.getElementById('submitClaimBtn');
+            const buyerSubmitContainer = document.getElementById('buyerSubmitContainer');
+            const messageArea = document.getElementById('messageArea');
+            const messageText = document.getElementById('messageText');
+            const closeMsgBtn = document.getElementById('closeMsgBtn');
+            const visitorTableBody = document.getElementById('visitorTableBody');
+            const exitSellerBtn = document.getElementById('exitSellerBtn');
+            const birthdayInput = document.getElementById('birthdayInput');
+            const verifySubmit = document.getElementById('verifySubmit');
+            const verifyCancel = document.getElementById('verifyCancel');
+            const manageGrid = document.getElementById('manageGrid');
+            const searchInput = document.getElementById('searchInput');
+            const exportVisitorBtn = document.getElementById('exportVisitorBtn');
+            const themeSwitch = document.getElementById('themeSwitch');
+
+            function getGenderIcon(gender) {
+                if (gender === '男') return '♂️';
+                if (gender === '女') return '♀️';
+                return '⚪';
+            }
+
+            function isStudentIdTaken(studentId, currentQq = null) {
+                return visitors.some(v => v.studentId === studentId && v.qq !== currentQq);
+            }
+
+            function recordVisitorAccess(visitor) {
+                const now = new Date().toLocaleString();
+                const existingIndex = visitors.findIndex(v => v.studentId === visitor.studentId);
+                
+                if (existingIndex !== -1) {
+                    if (visitors[existingIndex].qq !== visitor.qq) {
+                        return false;
+                    }
+                    visitors[existingIndex] = {
+                        ...visitors[existingIndex],
+                        ...visitor,
+                        lastAccess: now,
+                        ip: currentIP
+                    };
+                } else {
+                    visitors.push({
+                        ...visitor,
+                        firstAccess: now,
+                        lastAccess: now,
+                        claimedItems: [],
+                        ip: currentIP
+                    });
+                }
+                localStorage.setItem('visitors', JSON.stringify(visitors));
+                return true;
+            }
+
+            function updateVisitorClaimedItems(visitorQQ, claimedIds) {
+                const visitor = visitors.find(v => v.qq === visitorQQ);
+                if (visitor) {
+                    visitor.claimedItems = claimedIds.map(id => {
+                        const item = items.find(i => i.id === id);
+                        return item ? `${item.name}${item.priceType === 'paid' ? '(' + item.price + '元)' : ''}` : id;
+                    });
+                    visitor.lastAccess = new Date().toLocaleString();
+                    localStorage.setItem('visitors', JSON.stringify(visitors));
+                }
+            }
+
+            function renderSellerTable() {
+                const html = visitors.map(v => {
+                    const claimedIds = userClaimedItems[v.studentId] || [];
+                    const claimedNames = claimedIds.map(id => {
+                        const item = items.find(i => i.id === id);
+                        return item ? `${item.name}${item.priceType === 'paid' ? '(' + item.price + '元)' : ''}` : id;
+                    }).join('、');
+                    
+                    const ipStatus = getIPStatus(v.ip);
+                    
+                    return `
+                    <tr>
+                        <td>${v.nickname || ''}</td>
+                        <td>${getGenderIcon(v.gender)} ${v.gender || '保密'}</td>
+                        <td>${v.campus || ''}</td>
+                        <td>${v.studentId || ''}</td>
+                        <td>${v.qq || ''}</td>
+                        <td>${claimedNames || '—'}</td>
+                        <td>${v.firstAccess || ''}</td>
+                        <td>${v.lastAccess || ''}</td>
+                        <td>${v.ip || '未知'}</td>
+                        <td><span class="ip-status ${ipStatus.class}">${ipStatus.text}</span></td>
+                    </tr>
+                `}).join('');
+                visitorTableBody.innerHTML = html || '<tr><td colspan="10" style="text-align:center;padding:2rem;">暂无访客记录</td></tr>';
+            }
+
+            function renderManageGrid() {
+                if (!manageGrid) return;
+                manageGrid.innerHTML = '';
+                
+                items.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'manage-card';
+                    
+                    card.innerHTML = `
+                        <div class="manage-card-header">
+                            <h4>${item.name}</h4>
+                            <span class="manage-condition">${item.condition}</span>
+                        </div>
+                        <div class="manage-desc">${item.description}</div>
+                        <div class="manage-price">
+                            ${item.priceType === 'free' ? '<span class="free">免费</span>' : `<span class="paid">💰 ¥${item.price}</span>`}
+                        </div>
+                        <div class="manage-claimed">
+                            <input type="checkbox" id="manage-${item.id}" ${item.claimed ? 'checked' : ''}>
+                            <label for="manage-${item.id}">标记为已申领</label>
+                            <span class="manage-claimed-status">${item.claimed ? '✅ 已申领' : '🟢 可申领'}</span>
+                        </div>
+                        <div class="edit-controls">
+                            <button class="edit-btn" data-id="${item.id}">✎ 编辑</button>
+                        </div>
+                    `;
+                    
+                    const checkbox = card.querySelector('input[type="checkbox"]');
+                    checkbox.addEventListener('change', (e) => {
+                        const newClaimed = e.target.checked;
+                        const index = items.findIndex(i => i.id === item.id);
+                        if (index !== -1) {
+                            items[index].claimed = newClaimed;
+                            saveItems(items);
+                            
+                            const statusSpan = card.querySelector('.manage-claimed-status');
+                            statusSpan.innerText = newClaimed ? '✅ 已申领' : '🟢 可申领';
+                            
+                            filterItems();
+                            
+                            messageText.innerText = `✅ 物品“${item.name}”状态已更新为${newClaimed ? '已申领' : '可申领'}`;
+                            messageArea.classList.add('show');
+                            setTimeout(() => messageArea.classList.remove('show'), 3000);
+                        }
+                    });
+
+                    const editBtn = card.querySelector('.edit-btn');
+                    editBtn.addEventListener('click', () => {
+                        showEditForm(item.id);
+                    });
+                    
+                    manageGrid.appendChild(card);
+                });
+            }
+
+            function showEditForm(itemId) {
+                if (editingItemId) return;
+                
+                editingItemId = itemId;
+                const item = items.find(i => i.id === itemId);
+                
+                const card = document.querySelector(`.manage-card:has(.edit-btn[data-id="${itemId}"])`);
+                if (!card) return;
+                
+                const editForm = document.createElement('div');
+                editForm.className = 'edit-form';
+                editForm.innerHTML = `
+                    <input type="text" id="edit-name-${itemId}" value="${item.name.replace(/"/g, '&quot;')}" placeholder="物品名称">
+                    <select id="edit-condition-${itemId}">
+                        ${generateConditionOptions(item.condition)}
+                    </select>
+                    <select id="edit-priceType-${itemId}">
+                        <option value="free" ${item.priceType === 'free' ? 'selected' : ''}>免费</option>
+                        <option value="paid" ${item.priceType === 'paid' ? 'selected' : ''}>付费</option>
+                    </select>
+                    <input type="number" id="edit-price-${itemId}" value="${item.price}" placeholder="价格(0表示免费)" min="0">
+                    <textarea id="edit-desc-${itemId}" placeholder="物品描述">${item.description}</textarea>
+                    <div class="edit-actions">
+                        <button class="save-edit-btn" data-id="${itemId}">保存</button>
+                        <button class="cancel-edit-btn" data-id="${itemId}">取消</button>
+                    </div>
+                `;
+                
+                card.appendChild(editForm);
+
+                const saveBtn = editForm.querySelector('.save-edit-btn');
+                const cancelBtn = editForm.querySelector('.cancel-edit-btn');
+
+                saveBtn.addEventListener('click', () => {
+                    const newData = {
+                        name: document.getElementById(`edit-name-${itemId}`)?.value,
+                        condition: document.getElementById(`edit-condition-${itemId}`)?.value,
+                        priceType: document.getElementById(`edit-priceType-${itemId}`)?.value,
+                        price: parseFloat(document.getElementById(`edit-price-${itemId}`)?.value) || 0,
+                        description: document.getElementById(`edit-desc-${itemId}`)?.value
+                    };
+                    
+                    const index = items.findIndex(i => i.id === itemId);
+                    if (index !== -1) {
+                        items[index] = { ...items[index], ...newData };
+                        saveItems(items);
+                        editingItemId = null;
+                        
+                        renderManageGrid();
+                        filterItems();
+                        renderStats();
+                        
+                        messageText.innerText = '✅ 物品信息已更新';
+                        messageArea.classList.add('show');
+                        setTimeout(() => messageArea.classList.remove('show'), 3000);
+                    }
+                });
+
+                cancelBtn.addEventListener('click', () => {
+                    editingItemId = null;
+                    renderManageGrid();
+                });
+            }
+
+            function generateConditionOptions(selected) {
+                const conditions = [];
+                for (let i = 1; i <= 9; i++) {
+                    conditions.push(`${i}新`);
+                }
+                conditions.push('95新', '99新');
+                return conditions.map(c => 
+                    `<option value="${c}" ${selected === c ? 'selected' : ''}>${c}</option>`
+                ).join('');
+            }
+
+            function updateSelectedDisplay() {
+                if (selectedItemIds.length === 0) {
+                    selectedItemsList.innerText = '（暂无）';
+                } else {
+                    const names = selectedItemIds.map(id => {
+                        const item = items.find(i => i.id === id);
+                        return item ? `${item.name}${item.priceType === 'paid' ? '(' + item.price + '元)' : ''}` : '';
+                    }).join('； ');
+                    selectedItemsList.innerText = names;
+                }
+            }
+
+            function refreshCounters() {
+                const freeSelected = selectedItemIds.filter(id => {
+                    const item = items.find(i => i.id === id);
+                    return item && item.priceType === 'free';
+                }).length;
+                const paidSelected = selectedItemIds.length - freeSelected;
+                freeCountDisplay.innerText = `免费 ${freeSelected}/3`;
+                paidCountDisplay.innerText = `付费 ${paidSelected} 件`;
+                updateSelectedDisplay();
+                
+                if (submitBtn) {
+                    submitBtn.disabled = selectedItemIds.length === 0 || freeSelected > 3;
+                }
+            }
+
+            function canUserClaimMoreFree(studentId, newFreeCount) {
+                const claimedFreeCount = getUserClaimedFreeCount(studentId);
+                return claimedFreeCount + newFreeCount <= 3;
+            }
+
+            // 显示商品详情
+            function showItemDetail(item) {
+                const isSelected = selectedItemIds.includes(item.id);
+                const userAlreadyClaimed = currentVisitor && 
+                    loadUserClaimedItems(currentVisitor.studentId).includes(item.id);
+                const isDisabled = item.claimed || userAlreadyClaimed;
+                
+                // 获取已申领的免费物品数量
+                const claimedFreeCount = getUserClaimedFreeCount(currentVisitor.studentId);
+                
+                let buttonText = '';
+                if (userAlreadyClaimed) {
+                    buttonText = '✓ 已申领过';
+                } else if (item.claimed) {
+                    buttonText = '❌ 已被申领';
+                } else if (isSelected) {
+                    buttonText = '✓ 取消选择';
+                } else {
+                    buttonText = item.priceType === 'free' ? '➕ 选为免费' : '➕ 选为付费';
+                }
+                
+                itemDetailCard.innerHTML = `
+                    <img class="item-img-large" src="${item.image}" alt="${item.name}" onerror="this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22200%22%20viewBox%3D%220%200%20200%20200%22%3E%3Crect%20width%3D%22200%22%20height%3D%22200%22%20fill%3D%22%23f0e6dc%22%2F%3E%3Ctext%20x%3D%2230%22%20y%3D%22115%22%20font-size%3D%2220%22%20fill%3D%22%23655a4e%22%3E📷%20暂无图片%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                    <div class="item-detail-name">${item.name}</div>
+                    <div class="item-detail-price">
+                        ${item.priceType === 'free' ? 
+                            '<span class="free">免费</span>' : 
+                            `<span class="paid">💰 ¥${item.price}</span>`}
+                    </div>
+                    <div class="item-detail-condition">成色：${item.condition}</div>
+                    <div class="item-detail-desc">${item.description}</div>
+                    <div class="detail-actions">
+                        <button class="detail-select-btn ${isSelected ? 'selected' : ''}" 
+                            ${isDisabled ? 'disabled' : ''} 
+                            data-id="${item.id}">${buttonText}</button>
+                        <button class="detail-close-btn">关闭</button>
+                    </div>
+                `;
+                
+                const selectBtn = itemDetailCard.querySelector('.detail-select-btn');
+                if (selectBtn && !isDisabled) {
+                    selectBtn.addEventListener('click', () => {
+                        if (userAlreadyClaimed) return;
+                        
+                        let newSelectedIds;
+                        if (selectedItemIds.includes(item.id)) {
+                            newSelectedIds = selectedItemIds.filter(id => id !== item.id);
+                        } else {
+                            if (item.priceType === 'free') {
+                                // 计算如果加上这个物品，总共会有多少免费物品
+                                const tempFreeCount = [...selectedItemIds, item.id].filter(id => {
+                                    const i = items.find(i => i.id === id);
+                                    return i && i.priceType === 'free';
+                                }).length;
+                                
+                                // 获取用户已申领的免费物品数量
+                                const claimedFreeCount = getUserClaimedFreeCount(currentVisitor.studentId);
+                                
+                                // 总免费物品数量 = 已申领的 + 这次要选的
+                                const totalFreeCount = claimedFreeCount + tempFreeCount;
+                                
+                                // 调试用
+                                console.log('已申领免费物品:', claimedFreeCount);
+                                console.log('这次要选的免费物品:', tempFreeCount);
+                                console.log('总计:', totalFreeCount);
+                                
+                                if (totalFreeCount > 3) {
+                                    alert(`您已经申领了3件免费物品，不能再申领更多免费物品了`);
+                                    return;
+                                }
+                            }
+                            newSelectedIds = [...selectedItemIds, item.id];
+                        }
+                        
+                        selectedItemIds = newSelectedIds;
+                        filterItems();
+                        refreshCounters();
+                        itemDetailOverlay.style.display = 'none';
+                    });
+                }
+                
+                itemDetailCard.querySelector('.detail-close-btn').addEventListener('click', () => {
+                    itemDetailOverlay.style.display = 'none';
+                });
+                
+                itemDetailOverlay.style.display = 'flex';
+            }
+
+            function createItemCard(item) {
+                const card = document.createElement('div');
+                card.className = `item-card ${item.priceType === 'free' ? 'free-border' : 'paid-border'}`;
+                card.dataset.id = item.id;
+
+                const userAlreadyClaimed = currentVisitor && 
+                    loadUserClaimedItems(currentVisitor.studentId).includes(item.id);
+                
+                const img = document.createElement('img');
+                img.className = 'item-img';
+                img.alt = item.name;
+                img.src = item.image;
+                img.onerror = function() {
+                    this.src = 'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22200%22%20viewBox%3D%220%200%20200%20200%22%3E%3Crect%20width%3D%22200%22%20height%3D%22200%22%20fill%3D%22%23f0e6dc%22%2F%3E%3Ctext%20x%3D%2230%22%20y%3D%22115%22%20font-size%3D%2220%22%20fill%3D%22%23655a4e%22%3E📷%20暂无图片%3C%2Ftext%3E%3C%2Fsvg%3E';
+                };
+
+                card.innerHTML = `
+                    <div class="item-img-container">
+                        ${img.outerHTML}
+                    </div>
+                    <div class="item-name">
+                        ${item.name}
+                        <span class="item-price-tag ${item.priceType}">
+                            ${item.priceType === 'free' ? '免费' : `¥${item.price}`}
+                        </span>
+                    </div>
+                `;
+
+                card.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (!isSellerMode) {
+                        showItemDetail(item);
+                    }
+                });
+
+                return card;
+            }
+
+            function filterItems() {
+                filteredItems = items.filter(item => {
+                    const matchSearch = searchKeyword === '' || 
+                        (item.name && item.name.toLowerCase().includes(searchKeyword.toLowerCase())) ||
+                        (item.description && item.description.toLowerCase().includes(searchKeyword.toLowerCase()));
+                    return matchSearch;
+                });
+                
+                if (itemsGridEl) {
+                    itemsGridEl.innerHTML = '';
+                    filteredItems.forEach(item => {
+                        const card = createItemCard(item);
+                        itemsGridEl.appendChild(card);
+                    });
+                }
+            }
+
+            function enterMain(visitor) {
+                currentVisitor = visitor;
+                displayNickname.innerText = `昵称: ${visitor.nickname}`;
+                displayGender.innerText = `${getGenderIcon(visitor.gender)} ${visitor.gender}`;
+                displayCampus.innerText = `校区: ${visitor.campus}`;
+                displayStudentId.innerText = `学号: ${visitor.studentId}`;
+                displayQQ.innerText = `QQ: ${visitor.qq}`;
+                
+                infoOverlay.style.display = 'none';
+                mainContent.style.display = 'block';
+                visitorPanel.style.display = 'flex';
+                
+                if (isSellerMode) {
+                    sellerPanel.style.display = 'block';
+                    buyerSubmitContainer.style.display = 'none';
+                    renderManageGrid();
+                    renderIPMonitorGrid();
+                    renderStats();
+                } else {
+                    sellerPanel.style.display = 'none';
+                    buyerSubmitContainer.style.display = 'block';
+                }
+                
+                recordVisitorAccess(visitor);
+                
+                selectedItemIds = [];
+                searchKeyword = '';
+                if (searchInput) searchInput.value = '';
+                
+                filterItems();
+                refreshCounters();
+                
+                if (isSellerMode) {
+                    renderSellerTable();
+                }
+            }
+
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'items') {
+                    items = JSON.parse(e.newValue);
+                    filterItems();
+                    refreshCounters();
+                    if (isSellerMode) {
+                        renderManageGrid();
+                        renderSellerTable();
+                        renderStats();
+                        renderIPMonitorGrid();
+                    }
+                } else if (e.key === 'visitors') {
+                    visitors = JSON.parse(e.newValue || '[]');
+                    if (isSellerMode) renderSellerTable();
+                } else if (e.key === 'ipRecords') {
+                    if (isSellerMode) {
+                        renderIPMonitorGrid();
+                        renderSellerTable();
+                    }
+                }
+            });
+
+            enterBtn.addEventListener('click', async () => {
+                const nickname = nicknameInput.value.trim();
+                const gender = genderInput.value;
+                const campus = campusInput.value;
+                const studentId = studentIdInput.value.trim();
+                const qq = qqInput.value.trim();
+
+                if (!nickname || !studentId || !qq) {
+                    alert('昵称、学号和QQ号不能为空');
+                    return;
+                }
+                
+                if (!/^\d{8,12}$/.test(studentId)) {
+                    alert('❌ 学号格式不正确');
+                    return;
+                }
+                
+                if (!/^\d{5,12}$/.test(qq)) {
+                    alert('QQ号应为5-12位数字');
+                    return;
+                }
+
+                const visitor = { nickname, gender, campus, studentId, qq };
+
+                if (nickname === SELLER.nickname && gender === SELLER.gender && studentId === SELLER.studentId && qq === SELLER.qq) {
+                    sellerVerifyOverlay.style.display = 'flex';
+                    birthdayInput.value = '';
+                    return;
+                }
+
+                await getUserIP();
+                if (!checkIPLimit(studentId)) {
+                    return;
+                }
+
+                const existingVisitor = visitors.find(v => v.studentId === studentId);
+                if (existingVisitor) {
+                    if (existingVisitor.qq !== qq) {
+                        alert('❌ 该学号已被使用，请使用本人学号注册');
+                        return;
+                    }
+                }
+
+                isSellerMode = false;
+                enterMain(visitor);
+            });
+
+            verifySubmit.addEventListener('click', () => {
+                if (birthdayInput.value === SELLER.birthday) {
+                    sellerVerifyOverlay.style.display = 'none';
+                    isSellerMode = true;
+                    currentVisitor = { 
+                        nickname: SELLER.nickname, 
+                        gender: SELLER.gender, 
+                        campus: SELLER.campus, 
+                        studentId: SELLER.studentId, 
+                        qq: SELLER.qq 
+                    };
+                    enterMain(currentVisitor);
+                } else {
+                    alert('生日错误');
+                }
+            });
+
+            verifyCancel.addEventListener('click', () => {
+                sellerVerifyOverlay.style.display = 'none';
+            });
+
+            exitSellerBtn.addEventListener('click', () => {
+                isSellerMode = false;
+                sellerPanel.style.display = 'none';
+                infoOverlay.style.display = 'flex';
+                mainContent.style.display = 'none';
+                visitorPanel.style.display = 'none';
+            });
+
+            editInfoBtn.addEventListener('click', () => {
+                nicknameInput.value = currentVisitor?.nickname || '';
+                genderInput.value = currentVisitor?.gender || '保密';
+                campusInput.value = currentVisitor?.campus || '将军路校区';
+                studentIdInput.value = currentVisitor?.studentId || '';
+                qqInput.value = currentVisitor?.qq || '';
+                infoOverlay.style.display = 'flex';
+                mainContent.style.display = 'none';
+                visitorPanel.style.display = 'none';
+                sellerPanel.style.display = 'none';
+            });
+
+            submitBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                if (selectedItemIds.length === 0) {
+                    alert('请至少选择一件物品');
+                    return;
+                }
+                
+                const freeSelected = selectedItemIds.filter(id => {
+                    const item = items.find(i => i.id === id);
+                    return item && item.priceType === 'free';
+                }).length;
+                if (freeSelected > 3) {
+                    alert('免费物品不能超过3件');
+                    return;
+                }
+
+                const claimedFreeCount = getUserClaimedFreeCount(currentVisitor.studentId);
+                if (claimedFreeCount + freeSelected > 3) {
+                    alert(`您已经申领了3件免费物品，不能再申领更多免费物品了`);
+                    return;
+                }
+
+                const anyClaimed = selectedItemIds.some(id => {
+                    const item = items.find(i => i.id === id);
+                    return item && item.claimed === true;
+                });
+
+                if (anyClaimed) {
+                    alert('部分物品已被他人申领，请重新选择');
+                    items = loadItems();
+                    filterItems();
+                    return;
+                }
+
+                selectedItemIds.forEach(id => {
+                    const index = items.findIndex(i => i.id === id);
+                    if (index !== -1) {
+                        items[index].claimed = true;
+                    }
+                });
+
+                const existingClaimed = loadUserClaimedItems(currentVisitor.studentId);
+                const newClaimed = [...new Set([...existingClaimed, ...selectedItemIds])];
+                saveUserClaimedItems(currentVisitor.studentId, newClaimed);
+
+                saveItems(items);
+
+                if (currentVisitor) {
+                    updateVisitorClaimedItems(currentVisitor.qq, newClaimed);
+                }
+
+                const itemNames = selectedItemIds.map(id => {
+                    const item = items.find(i => i.id === id);
+                    return item ? item.name : '';
+                }).filter(Boolean).join('、');
+                messageText.innerText = `✅ 申领成功！${currentVisitor?.nickname}，你选择了 ${itemNames}。付费物品请当面支付。`;
+                messageArea.classList.add('show');
+
+                selectedItemIds = [];
+                filterItems();
+                refreshCounters();
+
+                if (isSellerMode) {
+                    renderManageGrid();
+                    renderSellerTable();
+                    renderStats();
+                    renderIPMonitorGrid();
+                }
+            });
+
+            closeMsgBtn.addEventListener('click', () => {
+                messageArea.classList.remove('show');
+            });
+
+            itemDetailOverlay.addEventListener('click', (e) => {
+                if (e.target === itemDetailOverlay) {
+                    itemDetailOverlay.style.display = 'none';
+                }
+            });
+
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    searchKeyword = e.target.value;
+                    filterItems();
+                });
+            }
+
+            if (exportVisitorBtn) {
+                exportVisitorBtn.addEventListener('click', exportVisitorData);
+            }
+
+            if (themeSwitch) {
+                themeSwitch.addEventListener('click', toggleTheme);
+            }
+
+            // 初始化
+            initTheme();
+            getUserIP();
+            filterItems();
+            refreshCounters();
+
+            setInterval(() => {
+                const savedItems = localStorage.getItem('items');
+                if (savedItems) {
+                    try {
+                        const parsed = JSON.parse(savedItems);
+                        if (JSON.stringify(parsed) !== JSON.stringify(items)) {
+                            items = parsed;
+                            filterItems();
+                            refreshCounters();
+                            if (isSellerMode) {
+                                renderManageGrid();
+                                renderSellerTable();
+                                renderStats();
+                                renderIPMonitorGrid();
+                            }
+                        }
+                    } catch (e) {}
+                }
+            }, 3000);
+        })();
+    </script>
+</body>
+</html>
