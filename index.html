@@ -1605,16 +1605,20 @@
                 if (!visitorTableBody) return;
     
                 const html = visitors.map(v => {
-                    // 从 userClaimedItems 获取这个访客的申领记录
+        // 从 userClaimedItems 获取这个访客的申领记录
                     const claimedIds = userClaimedItems[v.studentId] || [];
         
-                    // 把物品ID转换成物品名称
+        // 把物品ID转换成"名称 (ID)"的格式
                     const claimedNames = claimedIds.map(id => {
                         const item = items.find(i => i.id === id);
-                        return item ? `${item.name}${item.priceType === 'paid' ? '(' + item.price + '元)' : ''}` : id;
+                        if (item) {
+                // 显示格式：物品名称 (ID)
+                            return `${item.name} (${item.id})${item.priceType === 'paid' ? ' ¥' + item.price : ''}`;
+                        }
+                        return id;
                     }).join('、');
         
-                    // 检查IP是否被监测
+        // 检查IP是否被监测
                     const ipRecord = ipRecords.find(r => r.ip === v.ip);
                     const isMonitored = ipRecord && Object.keys(ipRecord.students).length > 2;
         
@@ -1715,15 +1719,15 @@
 
             function renderManageGrid() {
                 if (!manageGrid || !isSellerMode) return;
-                
+    
                 manageGrid.innerHTML = '';
                 items.forEach(item => {
                     const card = document.createElement('div');
                     card.className = 'manage-card';
-                    
+        
                     card.innerHTML = `
                         <div class="manage-card-header">
-                            <h4>${item.name}</h4>
+                            <h4>${item.name} <span style="font-size:0.8rem; color:var(--text-secondary);">(${item.id})</span></h4>
                             <span class="manage-condition">${item.condition}</span>
                         </div>
                         <div class="manage-desc">${item.description}</div>
@@ -1738,17 +1742,17 @@
                         <div class="edit-controls">
                             <button class="edit-btn" data-id="${item.id}">✎ 编辑</button>
                         </div>
-                    `;
-                    
+        `            ;
+        
                     const checkbox = card.querySelector('input[type="checkbox"]');
                     checkbox.addEventListener('change', async (e) => {
                         const newClaimed = e.target.checked;
                         await updateItemStatus(item.id, newClaimed);
-                        
+            
                         const statusSpan = card.querySelector('.manage-claimed-status');
                         statusSpan.innerText = newClaimed ? '✅ 已申领' : '🟢 可申领';
-                        
-                        messageText.innerText = `✅ 物品“${item.name}”状态已更新为${newClaimed ? '已申领' : '可申领'}`;
+            
+                        messageText.innerText = `✅ 物品“${item.name} (${item.id})”状态已更新为${newClaimed ? '已申领' : '可申领'}`;
                         messageArea.classList.add('show');
                         setTimeout(() => messageArea.classList.remove('show'), 3000);
                     });
@@ -1757,11 +1761,11 @@
                     editBtn.addEventListener('click', () => {
                         showEditForm(item);
                     });
-                    
+        
                     manageGrid.appendChild(card);
                 });
             }
-
+            
             function showEditForm(item) {
                 if (editingItemId) return;
                 
@@ -2163,6 +2167,7 @@
     </script>
 </body>
 </html>
+
 
 
 
