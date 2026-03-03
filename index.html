@@ -1349,9 +1349,20 @@
                 const data = await apiGet('/api/visitors/all');
                 if (data) {
                     visitors = data;
+        
+                    // 为每个访客加载他们的申领记录
+                    for (const visitor of visitors) {
+                        if (visitor.studentId) {
+                            const claims = await apiGet(`/api/claims/${visitor.studentId}`);
+                            if (claims) {
+                                userClaimedItems[visitor.studentId] = claims;
+                            }
+                        }
+                    }
+        
                     renderSellerTable();
                     analyzeIPRecords();
-                }
+                }    
             }
 
             async function loadUserClaims(studentId) {
@@ -1592,18 +1603,21 @@
             // ========== 卖家渲染函数 ==========
             function renderSellerTable() {
                 if (!visitorTableBody) return;
-                
+    
                 const html = visitors.map(v => {
+                    // 从 userClaimedItems 获取这个访客的申领记录
                     const claimedIds = userClaimedItems[v.studentId] || [];
+        
+                    // 把物品ID转换成物品名称
                     const claimedNames = claimedIds.map(id => {
                         const item = items.find(i => i.id === id);
                         return item ? `${item.name}${item.priceType === 'paid' ? '(' + item.price + '元)' : ''}` : id;
                     }).join('、');
-                    
+        
                     // 检查IP是否被监测
                     const ipRecord = ipRecords.find(r => r.ip === v.ip);
                     const isMonitored = ipRecord && Object.keys(ipRecord.students).length > 2;
-                    
+        
                     return `
                     <tr>
                         <td>${v.nickname || ''}</td>
@@ -1617,7 +1631,7 @@
                         <td>${v.ip || '未知'}</td>
                         <td><span class="ip-status ${isMonitored ? 'monitored' : ''}">${isMonitored ? '⚠️ 被监测' : '正常'}</span></td>
                     </tr>
-                `}).join('');
+    `            }).join('');
                 visitorTableBody.innerHTML = html || '<tr><td colspan="10" style="text-align:center;padding:2rem;">暂无访客记录</td></tr>';
             }
 
@@ -2149,6 +2163,7 @@
     </script>
 </body>
 </html>
+
 
 
 
