@@ -1323,19 +1323,18 @@
             async function loadItems() {
                 const data = await apiGet('/api/items');
                 if (data && data.length > 0) {
-                    // 确保每个物品都有正确的claimed状态
                     items = data.map(item => ({
                         ...item,
-                        claimed: item.claimed === 1 || item.claimed === true // 兼容数据库的0/1和布尔值
+                    claimed: item.claimed === 1 || item.claimed === true
                     }));
                     console.log('加载物品成功:', items.length, '件物品');
                 } else {
-                    console.log('数据库为空，使用基础数据');
-                    // 如果数据库为空，初始化基础数据
+                    console.log('数据库为空，初始化基础数据');
                     items = baseItems.map(item => ({...item, claimed: false}));
                     // 初始化数据库
-                    for (const item of items) {
-                        await apiPost('/api/items/update', { id: item.id, claimed: false });
+                    const result = await apiPost('/api/items/init', { items: baseItems });
+                    if (result && result.success) {
+                        console.log('数据库初始化成功');
                     }
                 }
                 filteredItems = [...items];
@@ -2150,4 +2149,5 @@
     </script>
 </body>
 </html>
+
 
