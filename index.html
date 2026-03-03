@@ -1289,6 +1289,10 @@
             async function apiGet(url) {
                 try {
                     const res = await fetch(url);
+                    if (!res.ok) {
+                        console.error('API响应错误:', res.status);
+                        return null;
+                    }
                     return await res.json();
                 } catch (error) {
                     console.error('API GET 错误:', error);
@@ -1303,6 +1307,10 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(data)
                     });
+                    if (!res.ok) {
+                        console.error('API响应错误:', res.status);
+                        return null;
+                    }
                     return await res.json();
                 } catch (error) {
                     console.error('API POST 错误:', error);
@@ -1314,10 +1322,20 @@
             async function loadItems() {
                 const data = await apiGet('/api/items');
                 if (data && data.length > 0) {
-                    items = data;
+                    // 确保每个物品都有正确的claimed状态
+                    items = data.map(item => ({
+                        ...item,
+                        claimed: item.claimed === 1 || item.claimed === true // 兼容数据库的0/1和布尔值
+                    }));
+                    console.log('加载物品成功:', items.length, '件物品');
                 } else {
+                    console.log('数据库为空，使用基础数据');
                     // 如果数据库为空，初始化基础数据
-                    items = baseItems;
+                    items = baseItems.map(item => ({...item, claimed: false}));
+                    // 初始化数据库
+                    for (const item of items) {
+                        await apiPost('/api/items/update', { id: item.id, claimed: false });
+                    }
                 }
                 filteredItems = [...items];
                 renderItemsGrid();
@@ -1440,6 +1458,11 @@
                 const userAlreadyClaimed = currentVisitor && 
                     (userClaimedItems[currentVisitor.studentId] || []).includes(item.id);
                 
+                // 根据状态设置不同的样式
+                if (item.claimed || userAlreadyClaimed) {
+                    card.style.opacity = '0.7';
+                }
+                
                 card.innerHTML = `
                     <div class="item-img-container">
                         <img class="item-img" src="${item.image}" alt="${item.name}" 
@@ -1451,6 +1474,8 @@
                             ${item.priceType === 'free' ? '免费' : `¥${item.price}`}
                         </span>
                     </div>
+                    ${item.claimed ? '<div style="color:#b5673a; font-size:0.8rem; margin-top:0.3rem;">❌ 已被申领</div>' : ''}
+                    ${userAlreadyClaimed ? '<div style="color:#3f6a4f; font-size:0.8rem; margin-top:0.3rem;">✓ 已申领过</div>' : ''}
                 `;
 
                 card.addEventListener('click', (e) => {
@@ -1520,7 +1545,7 @@
                                     }).length;
                                 
                                 if (claimedFreeCount + tempFreeCount > 3) {
-                                    alert('您已经申领了3件免费物品，不能再申领更多免费物品了');
+                                    alert(`您已经申领了${claimedFreeCount}件免费物品，不能再申领更多免费物品了`);
                                     return;
                                 }
                             }
@@ -1961,10 +1986,27 @@
             submitBtn.addEventListener('click', async (e) => {
                 e.preventDefault();
                 
-                if (!currentVisitor) return;
+                if (!currentVisitor) {
+                    alert('请先登录');
+                    return;
+                }
                 
                 if (selectedItemIds.length === 0) {
                     alert('请至少选择一件物品');
+                    return;
+                }
+                
+                // 检查选中的物品是否都还是可申领状态
+                const anyClaimed = selectedItemIds.some(id => {
+                    const item = items.find(i => i.id === id);
+                    return item && item.claimed === true;
+                });
+
+                if (anyClaimed) {
+                    alert('部分物品已被他人申领，请重新选择');
+                    await loadItems(); // 重新加载最新状态
+                    selectedItemIds = []; // 清空选择
+                    refreshCounters();
                     return;
                 }
                 
@@ -1977,6 +2019,23 @@
                     alert('免费物品不能超过3件');
                     return;
                 }
+
+                // 检查用户已申领的免费物品数量
+                const claimedFreeCount = (userClaimedItems[currentVisitor.studentId] || [])
+                    .filter(id => {
+                        const item = items.find(i => i.id === id);
+                        return item && item.priceType === 'free';
+                    }).length;
+                
+                if (claimedFreeCount + freeSelected > 3) {
+                    alert(`您已经申领了${claimedFreeCount}件免费物品，不能再申领更多免费物品了`);
+                    return;
+                }
+
+                console.log('提交申领:', {
+                    studentId: currentVisitor.studentId,
+                    itemIds: selectedItemIds
+                });
 
                 const result = await apiPost('/api/claims/submit', {
                     studentId: currentVisitor.studentId,
@@ -2005,7 +2064,7 @@
                         renderStats();
                     }
                 } else {
-                    alert('申领失败：' + (result?.error || '未知错误'));
+                    alert('申领失败：' + (result?.error || '物品可能已被他人申领'));
                     await loadItems(); // 重新加载以获取最新状态
                 }
             });
